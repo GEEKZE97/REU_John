@@ -1,0 +1,118 @@
+#VRML_SIM R2022b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/appearances/protos/Parquetry.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
+  position -9.323389503410155e-06 -9.32341586708227e-06 1.855598648586939
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 0.7 0.7
+  floorAppearance Parquetry {
+    type "dark strip"
+  }
+}
+DEF robot E-puck {
+  translation -0.285651 -0.292129 1.02585e-13
+  name "robot"
+  controller "robot"
+  emitter_channel 0
+  receiver_channel 0
+  turretSlot [
+    Camera {
+      name "camera1"
+      recognitionColors [
+        0 0.3 1
+      ]
+      fieldOfView 1
+      width 640
+      height 640
+      recognition Recognition {
+        frameThickness 3
+      }
+    }
+  ]
+  groundSensorsSlot [
+    Receiver {
+      name "receiver1"
+      recognitionColors [
+        0 0.3 1
+      ]
+      channel 1
+    }
+    Emitter {
+      name "emitter1"
+      channel 2
+    }
+    DistanceSensor {
+      name "distance sensor1"
+    }
+  ]
+}
+DEF supervisor Robot {
+  children [
+    DEF receiver Receiver {
+      rotation -0.5773502691896258 -0.5773502691896258 -0.5773502691896258 2.0944
+    }
+    DEF emitter Emitter {
+      rotation -0.5773502691896258 -0.5773502691896258 -0.5773502691896258 2.0944
+    }
+  ]
+  name "supervisor"
+  controller "supervisor"
+  supervisor TRUE
+}
+DEF target Solid {
+  translation 0.234838 0.229076 0.0492155
+  rotation 0.7071067811612944 -0.7071067812118007 1.27935411772318e-11 1.4333053211333218e-06
+  children [
+    DEF BOX_SHAPE Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "https://raw.githubusercontent.com/cyberbotics/webots/R2022a/projects/objects/factory/containers/protos/textures/wooden_box_base_color.jpg"
+          ]
+        }
+        roughnessMap ImageTexture {
+          url [
+            "https://raw.githubusercontent.com/cyberbotics/webots/R2022a/projects/objects/factory/containers/protos/textures/wooden_box_roughness.jpg"
+          ]
+        }
+        metalness 0
+        normalMap ImageTexture {
+          url [
+            "https://raw.githubusercontent.com/cyberbotics/webots/R2022a/projects/objects/factory/containers/protos/textures/wooden_box_normal.jpg"
+          ]
+        }
+        occlusionMap ImageTexture {
+          url [
+            "https://raw.githubusercontent.com/cyberbotics/webots/R2022a/projects/objects/factory/containers/protos/textures/wooden_box_occlusion.jpg"
+          ]
+        }
+      }
+      geometry Box {
+        size 0.1 0.1 0.1
+      }
+    }
+  ]
+  name "target"
+  model "wooden box"
+  boundingObject USE BOX_SHAPE
+  physics Physics {
+    density -1
+    mass 0.1
+  }
+  recognitionColors [
+    0 0 0
+  ]
+}

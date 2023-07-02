@@ -1,0 +1,75 @@
+#VRML_SIM R2022b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/floors/protos/RectangleArena.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.002499992187536621 0.9999968750146484 0 1.54
+  position -0.0769789523060592 -0.009762317935755683 1.9019529461174487
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 0.7 0.7
+}
+DEF supervisor Robot {
+  children [
+    DEF emitter Emitter {
+      rotation -0.5773502691896258 -0.5773502691896258 -0.5773502691896258 2.0943951023931953
+    }
+    DEF receiver Receiver {
+      rotation -0.5773502691896258 -0.5773502691896258 -0.5773502691896258 2.0943951023931953
+    }
+  ]
+  name "supervisor"
+  controller "supervisor"
+  supervisor TRUE
+}
+DEF robot E-puck {
+  translation -0.26 0.27 0
+  name "robot"
+  controller "robot"
+  emitter_channel 0
+  receiver_channel 0
+  turretSlot [
+    Camera {
+      name "camera1"
+      recognitionColors [
+        0 0.3 1
+      ]
+      fieldOfView 1
+      width 640
+      height 640
+      recognition Recognition {
+        frameThickness 3
+      }
+    }
+  ]
+}
+DEF target Solid {
+  translation 0.26 -0.23 0.01
+  rotation 0 0 1 -1.5707953071795862
+  children [
+    Shape {
+      appearance Appearance {
+        material Material {
+        }
+        texture ImageTexture {
+          url [
+            "https://avatars.githubusercontent.com/u/57842071?s=256"
+          ]
+        }
+      }
+      geometry Plane {
+        size 0.12 0.12
+      }
+    }
+  ]
+  name "target"
+}
