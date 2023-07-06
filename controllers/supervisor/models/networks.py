@@ -235,8 +235,8 @@ class DDPG(object):
             self.actor.eval()
             observation = T.tensor(observation,
                                    dtype=T.float).to(self.actor.device)
-            mu = self.target_actor(observation).to(self.target_actor.device)
-
+            # mu = self.target_actor(observation).to(self.target_actor.device)
+            mu = self.actor(observation).to(self.actor.device)
             return mu.cpu().detach().numpy()
         return np.zeros((2, ))
 
