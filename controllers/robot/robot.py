@@ -49,28 +49,34 @@ class FindTargetRobot(CSVRobot):
         return message
 
     def use_message_data(self, message):
-        # Action 1 is gas
-        gas = float(message[1])
-        # Action 0 is turning
-        wheel = float(message[0])
-
-        # Mapping gas from [-1, 1] to [0, 4] to make robot always move forward
-        gas = (gas+1)*2
-        gas = np.clip(gas, 0, 4.0)
-
-        # Mapping turning rate from [-1, 1] to [-2, 2]
-        wheel *= 2
-        wheel = np.clip(wheel, -2, 2)
-
-        # Apply gas to both motor speeds, add turning rate to one, subtract from other
-        self.motor_speeds[0] = gas + wheel
-        self.motor_speeds[1] = gas - wheel
-
-        # Clip final motor speeds to [-4, 4] to be sure that motors get valid values
-        self.motor_speeds = np.clip(self.motor_speeds, 0, 6)
-
-        # Apply motor speeds
+        self.motor_speeds[0] = float(message[0])*3
+        self.motor_speeds[1] = float(message[1])*3
+        self.motor_speeds = np.clip(self.motor_speeds, -6, 6)
         self._set_velocity(self.motor_speeds[0], self.motor_speeds[1])
+
+
+        # # Action 1 is gas
+        # gas = float(message[1])
+        # # Action 0 is turning
+        # wheel = float(message[0])
+        #
+        # # Mapping gas from [-1, 1] to [0, 4] to make robot always move forward
+        # gas = (gas+1)*2
+        # gas = np.clip(gas, 0, 4.0)
+        #
+        # # Mapping turning rate from [-1, 1] to [-2, 2]
+        # wheel *= 2
+        # wheel = np.clip(wheel, -2, 2)
+        #
+        # # Apply gas to both motor speeds, add turning rate to one, subtract from other
+        # self.motor_speeds[0] = gas + wheel
+        # self.motor_speeds[1] = gas - wheel
+        #
+        # # Clip final motor speeds to [-4, 4] to be sure that motors get valid values
+        # self.motor_speeds = np.clip(self.motor_speeds, 0, 6)
+        #
+        # # Apply motor speeds
+        # self._set_velocity(self.motor_speeds[0], self.motor_speeds[1])
 
     def setup_rangefinders(self, n_rangefinders):
         # Sensors

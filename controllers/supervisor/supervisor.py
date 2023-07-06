@@ -54,6 +54,7 @@ class FindTargetSupervisor(CSVSupervisorEnv):
         
         self.is_solved = False
         self.distance = utils.get_distance_from_target(self.robot, self.target)
+        self.count = 0
 
     def get_default_observation(self):
         return [0 for i in range(OBSERVATION_SPACE)]
@@ -120,24 +121,25 @@ class FindTargetSupervisor(CSVSupervisorEnv):
             
         # (3) Find the target
         if utils.get_distance_from_target(self.robot, self.target) < self.find_threshold:
-            reward += 5
+            reward = reward + 10 + (1500-self.steps)*1
 
         # (4) Action 1 (gas) or Action 0 (turning) should <= 1.5
-        if np.abs(action[1]) > 1.5 or np.abs(action[0]) > 1.5:
-            if self.steps > 10:
-                self.should_done = True
-            return -1
+        # if np.abs(action[1]) > 1.5 or np.abs(action[0]) > 1.5:
+        #     if self.steps > 10:
+        #         self.should_done = True
+        #     print('it is too fast')
+        #     return -1
 
         # (5) Stop or Punish the agent when the robot is getting to close to obstacle
         if np.max(rf_values) > 300:
             if self.steps > 10:
                 self.should_done = True
-            return -1
+            return -10
         elif np.max(rf_values) > 200:
             # reward -= 0.5
-            return reward-(0.005*np.max(rf_values))+0.5
+            return reward-(0.05*np.max(rf_values))+5
         
-        return reward
+        return reward-self.steps*0.0001
 
     def is_done(self):
         self.steps += 1
@@ -146,6 +148,7 @@ class FindTargetSupervisor(CSVSupervisorEnv):
         if distance < self.find_threshold:
             print("======== + Solved + ========")
             self.is_solved = True
+            self.count = self.count + 1
             return True
 
         if self.steps > self.steps_threshold or self.should_done:
@@ -185,7 +188,7 @@ if __name__ == '__main__':
                 gamma=0.99,
                 tau=0.001,
                 env=supervisor_env,
-                batch_size=256,
+                batch_size=8,
                 layer1_size=400,
                 layer2_size=300,
                 layer3_size=200,
@@ -202,16 +205,16 @@ if __name__ == '__main__':
     #                 load_dir='./models/saved/ddpg/')
     score_history = []
 
-    np.random.seed(0)
-    n_episode = 1600
+    # np.random.seed(0)
+    n_episode = 1000
     for i in range(n_episode+1):
         done = False
         score = 0
         obs = list(map(float, supervisor_env.reset()))
-        
+        supervisor_pre.is_solved = False
         first_iter = True
 
-        if score_history == [] or np.mean(score_history[-50:])<0.5 or score_history[-1]<5:
+        if score_history == [] or np.mean(score_history[-50:])<0.5 or score_history[-1] < 5:
             print("================= TRAINING =================")
             while not done:
                 if (not first_iter):
@@ -225,7 +228,7 @@ if __name__ == '__main__':
                 agent.remember(obs, act, reward, new_state, int(done))
                 agent.learn()
                 print('single step reward',reward)
-                score = reward
+                score += reward
 
                 obs = list(map(float, new_state))
                 # print('new_state',obs)
@@ -248,6 +251,6 @@ if __name__ == '__main__':
         fp.close()
         print("===== Episode", i, "score %.2f" % score,
             "50 game average %.2f" % np.mean(score_history[-50:]))
+        print('succeeded episodes',supervisor_pre.count)
 
-        # if supervisor_pre.is_solved == True:
         agent.save_models()
