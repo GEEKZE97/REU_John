@@ -9,8 +9,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/project
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.002499992187536621 0.9999968750146484 0 1.54
-  position -0.0769789523060592 -0.009762317935755683 1.9019529461174487
+  orientation 0.0024371447856279776 0.9999970283013094 6.094131627743997e-05 1.5899998476469543
+  position 0.0075059130513797576 0.016584695519261894 1.8920009058590888
 }
 WoodenBox {
   translation -0.1 0.16 0.07
@@ -22,6 +22,7 @@ TexturedBackground {
 TexturedBackgroundLight {
 }
 RectangleArena {
+  translation -0.0344673 -0.0017804 7.10543e-15
   floorSize 0.7 0.7
 }
 DEF supervisor Robot {
@@ -38,7 +39,12 @@ DEF supervisor Robot {
   supervisor TRUE
 }
 DEF robot E-puck {
-  translation -0.26 0.27 0
+  hidden position_0_0 17.06514983468501
+  hidden position_0_1 22.8552464659965
+  hidden rotation_1 0 0.9999999999999999 0 4.498779220325836
+  hidden rotation_2 0 -1 0 2.2774947627218447
+  translation -0.29420159191210754 0.24570636153722933 -8.314476758197395e-05
+  rotation 0.015818898004249828 -0.010861898629636779 -0.9998158738608277 0.0391269
   name "robot"
   controller "robot"
   emitter_channel 0
@@ -59,7 +65,7 @@ DEF robot E-puck {
   ]
 }
 DEF target Solid {
-  translation 0.26 -0.23 0.01
+  translation 0.23675 -0.252677 0.01
   rotation 0 0 1 -1.5707953071795862
   children [
     Shape {

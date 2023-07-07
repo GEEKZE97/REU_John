@@ -134,10 +134,10 @@ class FindTargetSupervisor(CSVSupervisorEnv):
         if np.max(rf_values) > 300:
             if self.steps > 10:
                 self.should_done = True
-            return -10
+            return -10-self.steps*0.0001
         elif np.max(rf_values) > 200:
             # reward -= 0.5
-            return reward-(0.05*np.max(rf_values))+5
+            return reward-(0.05*np.max(rf_values))+5-self.steps*0.0001
         
         return reward-self.steps*0.0001
 
@@ -186,9 +186,9 @@ if __name__ == '__main__':
                 lr_critic=0.00025,
                 input_dims=[10],
                 gamma=0.99,
-                tau=0.001,
+                tau=0.999,
                 env=supervisor_env,
-                batch_size=8,
+                batch_size=64,
                 layer1_size=400,
                 layer2_size=300,
                 layer3_size=200,
@@ -206,7 +206,7 @@ if __name__ == '__main__':
     score_history = []
 
     # np.random.seed(0)
-    n_episode = 1000
+    n_episode = 500
     for i in range(n_episode+1):
         done = False
         score = 0
@@ -214,35 +214,35 @@ if __name__ == '__main__':
         supervisor_pre.is_solved = False
         first_iter = True
 
-        # if score_history == [] or np.mean(score_history[-50:])<0.5 or score_history[-1] < 5:
-        #     print("================= TRAINING =================")
-        #     while not done:
-        #         if (not first_iter):
-        #             act = agent.choose_action_train(obs).tolist()
-        #         else:
-        #             first_iter = False
-        #             act = [0, 0]
-        #
-        #         new_state, reward, done, info = supervisor_env.step(act)
-        #         # print('1,2,3,4',new_state,'\n', reward,'\n', done, info)
-        #         agent.remember(obs, act, reward, new_state, int(done))
-        #         agent.learn()
-        #         print('single step reward',reward)
-        #         score += reward
-        #
-        #         obs = list(map(float, new_state))
-        #         # print('new_state',obs)
-        # else:
-        print("================= TESTING =================")
-        while not done:
-            if (not first_iter):
-                act = agent.choose_action_test(obs).tolist()
-            else:
-                first_iter = False
-                act = [0, 0]
+        if score_history == [] or np.mean(score_history[-50:])<0.5 or score_history[-1] < 1000:
+            print("================= TRAINING =================")
+            while not done:
+                if (not first_iter):
+                    act = agent.choose_action_train(obs).tolist()
+                else:
+                    first_iter = False
+                    act = [0, 0]
 
-            new_state, _, done, _ = supervisor_env.step(act)
-            obs = list(map(float, new_state))
+                new_state, reward, done, info = supervisor_env.step(act)
+                # print('1,2,3,4',new_state,'\n', reward,'\n', done, info)
+                agent.remember(obs, act, reward, new_state, int(done))
+                agent.learn()
+                print('single step reward',reward)
+                score += reward
+
+                obs = list(map(float, new_state))
+                # print('new_state',obs)
+        else:
+            print("================= TESTING =================")
+            while not done:
+                if (not first_iter):
+                    act = agent.choose_action_test(obs).tolist()
+                else:
+                    first_iter = False
+                    act = [0, 0]
+
+                new_state, _, done, _ = supervisor_env.step(act)
+                obs = list(map(float, new_state))
             
 
         score_history.append(score)
@@ -253,4 +253,5 @@ if __name__ == '__main__':
             "50 game average %.2f" % np.mean(score_history[-50:]))
         print('succeeded episodes',supervisor_pre.count)
 
-        agent.save_models()
+        if supervisor_pre.is_solved == True:
+            agent.save_models()

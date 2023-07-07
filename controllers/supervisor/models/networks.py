@@ -235,8 +235,8 @@ class DDPG(object):
             self.actor.eval()
             observation = T.tensor(observation,
                                    dtype=T.float).to(self.actor.device)
-            # mu = self.target_actor(observation).to(self.target_actor.device)
-            mu = self.actor(observation).to(self.actor.device)
+            mu = self.target_actor(observation).to(self.target_actor.device)
+            # mu = self.actor(observation).to(self.actor.device)
             return mu.cpu().detach().numpy()
         return np.zeros((2, ))
 
@@ -272,7 +272,7 @@ class DDPG(object):
 
         self.critic.train()
         self.critic.optimizer.zero_grad()
-        critic_loss = F.mse_loss(target, critic_value)
+        critic_loss = F.mse_loss(target, critic_value)  # td_error
         critic_loss.backward()
         self.critic.optimizer.step()
 
@@ -317,6 +317,8 @@ class DDPG(object):
         for name in actor_state_dict:
             actor_state_dict[name] = tau*actor_state_dict[name].clone() +\
                                      (1-tau)*target_actor_dict[name].clone()
+
+        self.target_actor.load_state_dict(actor_state_dict)
 
     def init_models(self, lr_critic, lr_actor, input_dims, layer1_size,
                     layer2_size, layer3_size, n_actions, save_dir):
