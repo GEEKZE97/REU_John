@@ -214,44 +214,44 @@ if __name__ == '__main__':
         supervisor_pre.is_solved = False
         first_iter = True
 
-        if score_history == [] or np.mean(score_history[-50:])<0.5 or score_history[-1] < 1000:
-            print("================= TRAINING =================")
-            while not done:
-                if (not first_iter):
-                    act = agent.choose_action_train(obs).tolist()
-                else:
-                    first_iter = False
-                    act = [0, 0]
+        # if score_history == [] or np.mean(score_history[-50:])<0.5 or score_history[-1] < 1000:
+        #     print("================= TRAINING =================")
+        #     while not done:
+        #         if (not first_iter):
+        #             act = agent.choose_action_train(obs).tolist()
+        #         else:
+        #             first_iter = False
+        #             act = [0, 0]
+        #
+        #         new_state, reward, done, info = supervisor_env.step(act)
+        #         # print('1,2,3,4',new_state,'\n', reward,'\n', done, info)
+        #         agent.remember(obs, act, reward, new_state, int(done))
+        #         agent.learn()
+        #         print('single step reward',reward)
+        #         score += reward
+        #
+        #         obs = list(map(float, new_state))
+        #         # print('new_state',obs)
+        # else:
+        print("================= TESTING =================")
+        while not done:
+            if (not first_iter):
+                act = agent.choose_action_test(obs).tolist()
+            else:
+                first_iter = False
+                act = [0, 0]
 
-                new_state, reward, done, info = supervisor_env.step(act)
-                # print('1,2,3,4',new_state,'\n', reward,'\n', done, info)
-                agent.remember(obs, act, reward, new_state, int(done))
-                agent.learn()
-                print('single step reward',reward)
-                score += reward
-
-                obs = list(map(float, new_state))
-                # print('new_state',obs)
-        else:
-            print("================= TESTING =================")
-            while not done:
-                if (not first_iter):
-                    act = agent.choose_action_test(obs).tolist()
-                else:
-                    first_iter = False
-                    act = [0, 0]
-
-                new_state, _, done, _ = supervisor_env.step(act)
-                obs = list(map(float, new_state))
+            new_state, _, done, _ = supervisor_env.step(act)
+            obs = list(map(float, new_state))
             
 
-        score_history.append(score)
-        fp = open("./exports/Episode-score.txt","a")
-        fp.write(str(score)+'\n')
-        fp.close()
-        print("===== Episode", i, "score %.2f" % score,
-            "50 game average %.2f" % np.mean(score_history[-50:]))
-        print('succeeded episodes',supervisor_pre.count)
-
-        if supervisor_pre.is_solved == True:
-            agent.save_models()
+        # score_history.append(score)
+        # fp = open("./exports/Episode-score.txt","a")
+        # fp.write(str(score)+'\n')
+        # fp.close()
+        # print("===== Episode", i, "score %.2f" % score,
+        #     "50 game average %.2f" % np.mean(score_history[-50:]))
+        # print('succeeded episodes',supervisor_pre.count)
+        #
+        # if supervisor_pre.is_solved == True:
+        #     agent.save_models()
